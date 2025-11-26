@@ -1,0 +1,22 @@
+# Node
+backend/node_modules/
+frontend/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Entornos
+.env
+backend/.env
+frontend/.env
+
+# Logs
+logs/
+*.log
+log.txt
+
+# Sistema
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
