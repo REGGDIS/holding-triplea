@@ -4,20 +4,19 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 
 import pool from './config/db.js';
-import authRoutes from './routes/auth.routes.js'; // lo crearemos en el siguiente paso
+import authRoutes from './routes/auth.routes.js';
+import empleadosRoutes from './routes/empleados.routes.js';
 
 dotenv.config();
 
 const app = express();
 
-// Middlewares básicos
 app.use(cors());
 app.use(express.json());
 
-// Ruta de prueba para verificar que el servidor está arriba
+// Health check
 app.get('/api/health', async (req, res) => {
     try {
-        // Simple ping a la BD
         const [rows] = await pool.query('SELECT 1 AS result');
         return res.json({
             ok: true,
@@ -33,10 +32,10 @@ app.get('/api/health', async (req, res) => {
     }
 });
 
-// Rutas de autenticación
+// Rutas
 app.use('/api/auth', authRoutes);
+app.use('/api/empleados', empleadosRoutes);
 
-// Levantar servidor
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
