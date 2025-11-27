@@ -1,27 +1,37 @@
 // backend/src/controllers/auth.controller.js
+import jwt from 'jsonwebtoken';
 import pool from '../config/db.js';
 
-function generarTokenParaUsuario(usuarioId) {
-    return `fake-token-user-${usuarioId}`;
+/**
+ * Genera un JWT para un usuario.
+ * El payload incluye info básica del usuario para usar en el frontend.
+ */
+function generarTokenJWT(usuario) {
+    const payload = {
+        sub: usuario.id, // "subject" del token
+        nombre_completo: usuario.nombre_completo,
+        email: usuario.email,
+        rol: usuario.rol_nombre || null,
+        rol_id: usuario.rol_id,
+        empresa_id: usuario.empresa_id
+    };
+
+    const options = {
+        expiresIn: process.env.JWT_EXPIRES_IN || '2h'
+    };
+
+    const token = jwt.sign(payload, process.env.JWT_SECRET, options);
+    return token;
 }
 
-function extraerUsuarioIdDesdeToken(token) {
-    if (!token || typeof token !== 'string') return null;
-
-    const prefix = 'fake-token-user-';
-    if (!token.startsWith(prefix)) return null;
-
-    const idParte = token.slice(prefix.length);
-    const id = Number(idParte);
-    if (Number.isNaN(id)) return null;
-
-    return id;
-}
-
+/**
+ * Controlador: POST /api/auth/login
+ */
 export async function login(req, res) {
     try {
         const { email, password } = req.body;
 
+        // 1. Validación básica de campos
         if (!email || !password) {
             return res.status(400).json({
                 ok: false,
@@ -29,6 +39,7 @@ export async function login(req, res) {
             });
         }
 
+        // 2. Buscar usuario por email
         const query = `
       SELECT 
         u.id,
@@ -48,6 +59,7 @@ export async function login(req, res) {
         const [rows] = await pool.query(query, [email]);
 
         if (rows.length === 0) {
+            // Usuario no encontrado
             return res.status(401).json({
                 ok: false,
                 message: 'Credenciales inválidas.'
@@ -56,6 +68,15 @@ export async function login(req, res) {
 
         const usuario = rows[0];
 
+        // 3. (Opcional) Verificar si el usuario está activo
+        // if (usuario.activo === 0) {
+        //   return res.status(403).json({
+        //     ok: false,
+        //     message: 'Usuario inactivo. Contacte al administrador.'
+        //   });
+        // }
+
+        // 4. Comparar contraseña (texto plano en esta primera versión)
         if (password !== usuario.password_hash) {
             return res.status(401).json({
                 ok: false,
@@ -63,8 +84,10 @@ export async function login(req, res) {
             });
         }
 
-        const token = generarTokenParaUsuario(usuario.id);
+        // 5. Generar JWT
+        const token = generarTokenJWT(usuario);
 
+        // 6. Construir objeto de usuario para el frontend
         const userResponse = {
             id: usuario.id,
             nombre_completo: usuario.nombre_completo,
@@ -89,35 +112,16 @@ export async function login(req, res) {
     }
 }
 
+/**
+ * Controlador: GET /api/auth/me
+ * Llega aquí solo si el token fue validado por el middleware authRequired.
+ */
 export async function me(req, res) {
     try {
-        const authHeader = req.headers.authorization || '';
-        let token = null;
+        // Gracias al middleware, tenemos info del usuario en req.user
+        const usuarioId = req.user.id;
 
-        if (authHeader.startsWith('Bearer ')) {
-            token = authHeader.substring(7);
-        }
-
-        if (!token) {
-            token = req.query.token || (req.body ? req.body.token : null);
-        }
-
-        if (!token) {
-            return res.status(401).json({
-                ok: false,
-                message: 'Token no proporcionado.'
-            });
-        }
-
-        const usuarioId = extraerUsuarioIdDesdeToken(token);
-
-        if (!usuarioId) {
-            return res.status(401).json({
-                ok: false,
-                message: 'Token inválido.'
-            });
-        }
-
+        // Opcional: refrescar datos desde la BD por si cambiaron
         const query = `
       SELECT 
         u.id,
