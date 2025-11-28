@@ -6,6 +6,7 @@ import dotenv from 'dotenv';
 import pool from './config/db.js';
 import authRoutes from './routes/auth.routes.js';
 import empleadosRoutes from './routes/empleados.routes.js';
+import asistenciaRoutes from './routes/asistencia.routes.js';
 
 dotenv.config();
 
@@ -35,6 +36,7 @@ app.get('/api/health', async (req, res) => {
 // Rutas
 app.use('/api/auth', authRoutes);
 app.use('/api/empleados', empleadosRoutes);
+app.use('/api/asistencias', asistenciaRoutes);
 
 const PORT = process.env.PORT || 3000;
 
