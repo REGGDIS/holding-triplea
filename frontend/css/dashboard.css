@@ -1,0 +1,124 @@
+/* ==================== ESTILOS GENERALES ==================== */
+.dashboard-body {
+  background: var(--color-background);
+  font-family: var(--font-family);
+  margin: 0;
+  padding: 0;
+}
+
+/* ==================== NAVBAR ==================== */
+.navbar {
+  width: 100%;
+  background: var(--color-primary);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-md) var(--spacing-xl);
+  box-shadow: var(--shadow-md);
+}
+
+.navbar-logo {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.navbar-menu {
+  list-style: none;
+  display: flex;
+  gap: var(--spacing-lg);
+}
+
+.navbar-menu li a {
+  color: white;
+  text-decoration: none;
+  font-weight: var(--font-weight-medium);
+}
+
+.navbar-menu li a:hover {
+  text-decoration: underline;
+}
+
+.navbar-user {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.btn-logout {
+  background: var(--color-secondary);
+  color: white;
+  border: none;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+}
+
+.btn-logout:hover {
+  background: var(--color-secondary-dark);
+}
+
+/* ==================== CONTENEDOR ==================== */
+.dashboard-container {
+  max-width: 1300px;
+  padding: var(--spacing-xl);
+  margin: auto;
+}
+
+/* ==================== TARJETAS RESUMEN ==================== */
+.dashboard-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--spacing-lg);
+  margin-top: var(--spacing-xl);
+}
+
+.card-summary {
+  background: white;
+  padding: var(--spacing-lg);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition-base);
+}
+
+.card-summary:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
+.card-summary p {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-primary);
+}
+
+/* ==================== MÓDULOS ==================== */
+.dashboard-modules {
+  margin-top: var(--spacing-2xl);
+  display: grid;
+  gap: var(--spacing-xl);
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
+.module-card {
+  text-decoration: none;
+  color: var(--color-text-primary);
+  background: white;
+  padding: var(--spacing-xl);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition-base);
+}
+
+.module-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 768px) {
+  .navbar-menu {
+    display: none;
+  }
+}

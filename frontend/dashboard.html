@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard | Holding Triple A</title>
+
+  <!-- Estilos base -->
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/common.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+
+  <!-- Favicon -->
+  <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
+</head>
+
+<body class="dashboard-body">
+  <!-- ==================== NAVBAR ==================== -->
+  <nav class="navbar">
+    <div class="navbar-logo">
+      <img src="assets/images/logo.png" alt="Holding Triple A" width="48">
+      <h2>Holding Triple A</h2>
+    </div>
+
+    <ul class="navbar-menu">
+      <li><a href="empleados.html" id="linkEmpleados">Empleados</a></li>
+      <li><a href="asistencia.html" id="linkAsistencia">Asistencia</a></li>
+      <li><a href="reportes.html" id="linkReportes">Reportes</a></li>
+    </ul>
+
+    <div class="navbar-user">
+      <span id="userName">Usuario: Nombre</span>
+      <button class="btn-logout" id="btnLogout">Cerrar sesión</button>
+    </div>
+  </nav>
+
+  <!-- ==================== CONTENEDOR PRINCIPAL ==================== -->
+  <main class="dashboard-container">
+
+    <!-- TÍTULO PRINCIPAL -->
+    <header class="dashboard-header">
+      <h1>Panel principal</h1>
+      <p>Bienvenido al sistema de gestión del Holding Triple A</p>
+    </header>
+
+    <!-- ==================== TARJETAS DE RESUMEN ==================== -->
+    <section class="dashboard-cards">
+
+      <div class="card card-summary" id="cardTotalEmpresas">
+        <h3>Total empresas</h3>
+        <p id="totalEmpresasValue">0</p>
+      </div>
+
+      <div class="card card-summary" id="cardTotalEmpleados">
+        <h3>Total empleados</h3>
+        <p id="totalEmpleadosValue">0</p>
+      </div>
+
+      <div class="card card-summary" id="cardAsistenciaHoy">
+        <h3>Asistencia hoy</h3>
+        <p id="asistenciaHoyValue">0</p>
+      </div>
+
+      <div class="card card-summary" id="cardUltimaActualizacion">
+        <h3>Última actualización</h3>
+        <p id="ultimaActualizacionValue">--/--/----</p>
+      </div>
+
+    </section>
+
+    <!-- ==================== MÓDULOS PRINCIPALES ==================== -->
+    <section class="dashboard-modules">
+
+      <a href="empleados.html" class="module-card" id="moduleEmpleados">
+        <h2>Gestión de empleados</h2>
+        <p>Administrar y consultar empleados del holding.</p>
+      </a>
+
+      <a href="asistencia.html" class="module-card" id="moduleAsistencia">
+        <h2>Gestión de asistencia</h2>
+        <p>Registrar y visualizar asistencia por empresa.</p>
+      </a>
+
+      <a href="reportes.html" class="module-card" id="moduleReportes">
+        <h2>Reportes e informes</h2>
+        <p>Generar reportes de estado civil, comuna y asistencia.</p>
+      </a>
+
+    </section>
+
+  </main>
+
+  <!-- Script funcional del dashboard -->
+  <script src="js/dashboard.js"></script>
+</body>
+</html>
