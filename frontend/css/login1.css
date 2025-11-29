@@ -1,0 +1,220 @@
+/* ========================================
+   ESTILOS ESPECÍFICOS DEL LOGIN
+======================================== */
+.login-page {
+  background: linear-gradient(
+    135deg,
+    var(--color-primary) 0%,
+    var(--color-secondary) 100%
+  );
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-lg);
+}
+
+/* ========== WRAPPER ========== */
+.login-wrapper {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-3xl);
+  max-width: 1100px;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: var(--border-radius-xl);
+  box-shadow: var(--shadow-lg);
+  backdrop-filter: blur(10px);
+  padding: var(--spacing-3xl);
+}
+
+/* ========== CARD DE LOGIN ========== */
+.login-container {
+  max-width: 480px;
+  width: 100%;
+  padding: var(--spacing-3xl);
+  background: var(--color-surface);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-md);
+  animation: fadeInUp 0.5s ease;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ========== HEADER ========== */
+.login-header {
+  text-align: center;
+  margin-bottom: var(--spacing-xl);
+}
+
+.login-logo {
+  margin-bottom: var(--spacing-lg);
+}
+
+.login-logo img {
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.login-title {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  margin-bottom: var(--spacing-xs);
+}
+
+.login-subtitle {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+/* ========== FORMULARIO ========== */
+.login-form {
+  margin-bottom: var(--spacing-lg);
+}
+
+/* Password wrapper */
+.password-input-wrapper {
+  position: relative;
+}
+
+/* Botón ojo */
+.btn-toggle-password {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  opacity: 0.6;
+  transition: opacity var(--transition-base);
+  padding: 4px;
+}
+
+.btn-toggle-password:hover {
+  opacity: 1;
+}
+
+/* Checkbox recordar */
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.checkbox-input {
+  width: 16px;
+  height: 16px;
+}
+
+/* Footer */
+.login-footer {
+  border-top: 1px solid var(--color-divider);
+  padding-top: var(--spacing-md);
+  margin-top: var(--spacing-md);
+}
+
+/* Panel lateral */
+.login-aside {
+  padding: var(--spacing-3xl);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+}
+
+.login-aside-content {
+  max-width: 360px;
+}
+
+.login-aside-title {
+  font-size: var(--font-size-2xl);
+  margin-bottom: var(--spacing-md);
+}
+
+.login-aside-text {
+  font-size: var(--font-size-sm);
+  opacity: 0.9;
+}
+
+/* En pantallas pequeñas: una sola columna y sin aside */
+@media (max-width: 767.98px) {
+  .login-wrapper {
+    grid-template-columns: 1fr;
+    padding: var(--spacing-lg);
+  }
+
+  .login-aside {
+    display: none;
+  }
+
+  .login-container {
+    max-width: 100%;
+  }
+}
+
+/* Lista de beneficios en el panel derecho */
+.login-aside-list {
+  list-style: none;
+  padding-left: 0;
+  margin-top: var(--spacing-lg);
+}
+
+.login-aside-list li {
+  position: relative;
+  padding-left: 24px;
+  margin-bottom: var(--spacing-sm);
+  font-size: var(--font-size-sm);
+  color: #ffffff;
+}
+
+/* Icono de check al inicio de cada línea */
+.login-aside-list li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: #ffffff;
+  font-weight: var(--font-weight-bold);
+}
+
+/* Enlaces debajo del botón de login */
+.login-links {
+  margin-top: var(--spacing-md);
+}
+
+.link-forgot-password,
+.link-support {
+  color: var(--color-primary-light);
+  font-size: var(--font-size-sm);
+  text-decoration: none;
+  transition: color var(--transition-base);
+}
+
+.link-forgot-password:hover,
+.link-support:hover {
+  color: var(--color-primary-dark);
+  text-decoration: underline;
+}
