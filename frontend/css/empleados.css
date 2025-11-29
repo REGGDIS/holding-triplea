@@ -1,0 +1,68 @@
+/* ==================== SECCIÓN DE FILTROS ==================== */
+.filters-section {
+  margin-top: var(--spacing-xl);
+  padding: var(--spacing-xl);
+}
+
+.filters-grid {
+  display: grid;
+  gap: var(--spacing-lg);
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+/* ==================== FORMULARIO ==================== */
+.form-section {
+  margin-top: var(--spacing-2xl);
+  padding: var(--spacing-xl);
+}
+
+.form-grid {
+  display: grid;
+  gap: var(--spacing-lg);
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+}
+
+.checkbox-group {
+  display: flex;
+  align-items: center;
+}
+
+.form-buttons {
+  grid-column: span 2;
+  display: flex;
+  gap: var(--spacing-md);
+}
+
+/* ==================== TABLA ==================== */
+.table-section {
+  margin-top: var(--spacing-2xl);
+  padding: var(--spacing-xl);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  padding: var(--spacing-md);
+  border-bottom: 1px solid var(--color-divider);
+}
+
+.table th {
+  text-align: left;
+  background: var(--color-primary-light);
+  color: white;
+}
+
+/* Estilo sugerido para botón secundario (Cancelar) */
+.btn-secondary {
+  background: var(--color-surface-alt);
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-divider);
+}
+
+.btn-secondary:hover {
+  background: var(--color-divider);
+}
