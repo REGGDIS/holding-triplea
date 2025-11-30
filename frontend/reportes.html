@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reportes | Holding Triple A</title>
+
+  <!-- Estilos -->
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/common.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/reportes.css">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="assets/images/favicon.ico">
+</head>
+
+<body class="dashboard-body">
+
+  <!-- ==================== NAVBAR ==================== -->
+  <nav class="navbar">
+    <div class="navbar-logo">
+      <img src="assets/images/logo.png" width="48" alt="Holding Triple A">
+      <h2>Holding Triple A</h2>
+    </div>
+
+    <ul class="navbar-menu">
+      <li><a href="dashboard.html">Inicio</a></li>
+      <li><a href="empleados.html">Empleados</a></li>
+      <li><a href="asistencia.html">Asistencia</a></li>
+      <li><a href="reportes.html" class="active">Reportes</a></li>
+    </ul>
+
+    <div class="navbar-user">
+      <span id="userName">Usuario: Nombre</span>
+      <button id="btnLogout" class="btn-logout">Cerrar Sesión</button>
+    </div>
+  </nav>
+
+  <!-- ==================== CONTENEDOR PRINCIPAL ==================== -->
+  <main class="dashboard-container">
+
+    <!-- TÍTULO -->
+    <header class="dashboard-header">
+      <h1>Reportes del Sistema</h1>
+      <p>Consultas avanzadas de asistencia y empleados</p>
+    </header>
+
+    <!-- ==================== FILTROS DE REPORTE ==================== -->
+    <section class="filters-section card">
+      <h3>Generar Reporte</h3>
+
+      <div class="filters-grid">
+        <!-- Empresa -->
+        <div class="form-group">
+          <label for="filtroEmpresa">Empresa</label>
+          <select id="filtroEmpresa" class="form-input">
+            <option value="">Todas</option>
+          </select>
+        </div>
+
+        <!-- Fecha inicio -->
+        <div class="form-group">
+          <label for="fechaInicio">Fecha Inicio</label>
+          <input type="date" id="fechaInicio" class="form-input">
+        </div>
+
+        <!-- Fecha fin -->
+        <div class="form-group">
+          <label for="fechaFin">Fecha Fin</label>
+          <input type="date" id="fechaFin" class="form-input">
+        </div>
+
+        <!-- Botón generar -->
+        <div class="form-group">
+          <label>&nbsp;</label>
+          <button id="btnGenerarReporte" class="btn btn-primary btn-block">
+            Generar
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TARJETAS DE KPIs ==================== -->
+    <section class="kpi-section">
+      <div class="kpi-card card" id="kpiTotalEmpleados">
+        <h4>Total Empleados</h4>
+        <p class="kpi-value" id="valorTotalEmpleados">0</p>
+      </div>
+
+      <div class="kpi-card card" id="kpiTotalAsistencias">
+        <h4>Total Asistencias</h4>
+        <p class="kpi-value" id="valorTotalAsistencias">0</p>
+      </div>
+
+      <div class="kpi-card card" id="kpiInasistencias">
+        <h4>Inasistencias</h4>
+        <p class="kpi-value" id="valorInasistencias">0</p>
+      </div>
+
+      <div class="kpi-card card" id="kpiHorasTrabajadas">
+        <h4>Horas Trabajadas</h4>
+        <p class="kpi-value" id="valorHorasTrabajadas">0</p>
+      </div>
+    </section>
+
+    <!-- ==================== TABLA DE RESULTADOS ==================== -->
+    <section class="table-section card">
+      <h3>Resultados del Reporte</h3>
+
+      <table class="table" id="tablaReportes">
+        <thead>
+          <tr>
+            <th>Empresa</th>
+            <th>Empleado</th>
+            <th>Fecha</th>
+            <th>Entrada</th>
+            <th>Salida</th>
+            <th>Horas</th>
+          </tr>
+        </thead>
+        <tbody id="reportesBody">
+          <!-- Filas dinámicas agregadas por JavaScript -->
+        </tbody>
+      </table>
+    </section>
+
+  </main>
+
+  <!-- (Notas internas de flujo ya venían en el doc de Raymond, las omitimos en el HTML final) -->
+
+  <script src="js/reportes.js"></script>
+</body>
+
+</html>

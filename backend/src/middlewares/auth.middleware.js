@@ -2,41 +2,46 @@
 import jwt from 'jsonwebtoken';
 
 /**
- * Middleware para proteger rutas que requieren autenticación.
+ * Middleware de autenticación con JWT.
  * Espera un header: Authorization: Bearer <token>
  */
-export function authRequired(req, res, next) {
-    const authHeader = req.headers.authorization || '';
+export const authMiddleware = (req, res, next) => {
+    const authHeader = req.headers['authorization'] || req.headers['Authorization'];
 
-    if (!authHeader.startsWith('Bearer ')) {
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
         return res.status(401).json({
             ok: false,
-            message: 'Token no proporcionado.'
+            message: 'No se proporcionó un token de autenticación.',
         });
     }
 
-    const token = authHeader.substring(7); // quitar "Bearer "
+    const token = authHeader.split(' ')[1];
 
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const secret = process.env.JWT_SECRET || 'dev-secret';
+        const decoded = jwt.verify(token, secret);
 
-        // Guardamos datos útiles del usuario en req.user
+        // Ajusta los campos según lo que firmes en el login
         req.user = {
-            id: decoded.sub,
-            nombre_completo: decoded.nombre_completo,
+            id: decoded.id,
             email: decoded.email,
+            nombre_completo: decoded.nombre_completo,
             rol: decoded.rol,
-            rol_id: decoded.rol_id,
-            empresa_id: decoded.empresa_id
+            empresa_id: decoded.empresa_id,
         };
 
-        return next();
+        next();
     } catch (error) {
         console.error('Error al verificar token JWT:', error);
-
         return res.status(401).json({
             ok: false,
-            message: 'Token inválido o expirado.'
+            message: 'Token inválido o expirado.',
         });
     }
-}
+};
+
+// Alias para mantener compatibilidad con auth.routes.js
+export const authRequired = authMiddleware;
+
+// También lo exportamos como default
+export default authMiddleware;
