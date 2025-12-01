@@ -1,6 +1,6 @@
 // backend/src/controllers/empleados.controller.js
+import pool from '../config/db.js';
 import {
-    findAllEmpleados,
     findEmpleadoById,
     createEmpleado,
     updateEmpleado,
@@ -9,22 +9,62 @@ import {
 
 /**
  * GET /api/empleados
- * Opcionalmente:
- *  - ?empresa_id=1
- *  - ?incluirInactivos=true
+ *
+ * Filtros que puede recibir (desde el frontend):
+ *  - ?empresaId=1 | ''  (Todas)
+ *  - ?comunaId=5  | ''  (Todas)
+ *  - ?estadoCivilId=2 | '' (Todos)
+ *  - ?incluirInactivos=true (opcional)
  */
 export async function listarEmpleados(req, res) {
     try {
-        const { empresa_id, incluirInactivos } = req.query;
+        let { empresaId, comunaId, estadoCivilId } = req.query;
 
-        const empresaId = empresa_id ? Number(empresa_id) : null;
-        const soloActivos = incluirInactivos === 'true' ? false : true;
+        // Normalizamos los filtros:
+        const empresaFilter =
+            empresaId && empresaId !== 'todas' ? Number(empresaId) : null;
 
-        const empleados = await findAllEmpleados({ empresaId, soloActivos });
+        const comunaFilter =
+            comunaId && comunaId !== 'todas' ? Number(comunaId) : null;
+
+        const estadoCivilFilter =
+            estadoCivilId && estadoCivilId !== 'todos' ? Number(estadoCivilId) : null;
+
+        const sql = `
+      SELECT 
+        e.id,
+        e.empresa_id,
+        emp.nombre AS empresa_nombre,
+        e.rut,
+        e.nombre_completo,
+        e.cargo,
+        e.email AS correo,
+        e.comuna_id,
+        c.nombre AS comuna_nombre,
+        e.estado_civil_id,
+        ec.nombre AS estado_civil_nombre,
+        e.activo
+      FROM empleados e
+      INNER JOIN empresas emp       ON e.empresa_id      = emp.id
+      LEFT JOIN comunas c           ON e.comuna_id       = c.id
+      LEFT JOIN estados_civiles ec  ON e.estado_civil_id = ec.id
+      WHERE ( ? IS NULL OR e.empresa_id      = ? )
+        AND ( ? IS NULL OR e.comuna_id       = ? )
+        AND ( ? IS NULL OR e.estado_civil_id = ? )
+      ORDER BY emp.nombre, e.nombre_completo
+    `;
+
+        const params = [
+            empresaFilter, empresaFilter,
+            comunaFilter, comunaFilter,
+            estadoCivilFilter, estadoCivilFilter
+        ];
+
+        const [rows] = await pool.query(sql, params);
 
         return res.json({
             ok: true,
-            data: empleados
+            data: rows
         });
     } catch (error) {
         console.error('Error en listarEmpleados:', error);
