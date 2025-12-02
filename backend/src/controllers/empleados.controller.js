@@ -11,24 +11,40 @@ import {
  * GET /api/empleados
  *
  * Filtros que puede recibir (desde el frontend):
- *  - ?empresaId=1 | ''  (Todas)
- *  - ?comunaId=5  | ''  (Todas)
- *  - ?estadoCivilId=2 | '' (Todos)
- *  - ?incluirInactivos=true (opcional)
+ *  - ?empresaId=1        | ?empresa_id=1        | ''  (Todas)
+ *  - ?comunaId=5         | ?comuna_id=5         | ''  (Todas)
+ *  - ?estadoCivilId=2    | ?estado_civil_id=2   | ''  (Todos)
  */
 export async function listarEmpleados(req, res) {
     try {
-        let { empresaId, comunaId, estadoCivilId } = req.query;
+        let {
+            empresaId,
+            empresa_id,
+            comunaId,
+            comuna_id,
+            estadoCivilId,
+            estado_civil_id
+        } = req.query;
 
-        // Normalizamos los filtros:
+        // Normalizamos los filtros para aceptar distintos nombres
+        const rawEmpresa = empresaId ?? empresa_id ?? '';
+        const rawComuna = comunaId ?? comuna_id ?? '';
+        const rawEstado = estadoCivilId ?? estado_civil_id ?? '';
+
         const empresaFilter =
-            empresaId && empresaId !== 'todas' ? Number(empresaId) : null;
+            rawEmpresa && String(rawEmpresa).toLowerCase() !== 'todas'
+                ? Number(rawEmpresa)
+                : null;
 
         const comunaFilter =
-            comunaId && comunaId !== 'todas' ? Number(comunaId) : null;
+            rawComuna && String(rawComuna).toLowerCase() !== 'todas'
+                ? Number(rawComuna)
+                : null;
 
         const estadoCivilFilter =
-            estadoCivilId && estadoCivilId !== 'todos' ? Number(estadoCivilId) : null;
+            rawEstado && String(rawEstado).toLowerCase() !== 'todos'
+                ? Number(rawEstado)
+                : null;
 
         const sql = `
       SELECT 
