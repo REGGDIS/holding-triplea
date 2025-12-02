@@ -5,14 +5,15 @@ import pool from '../config/db.js';
  * POST /api/reportes
  * Body esperado:
  * {
- *   empresaId: null | number,
+ *   empresaId: null | number | 'todas',
+ *   empleadoId: null | number,   // 👈 NUEVO (opcional)
  *   fechaInicio: 'YYYY-MM-DD',
  *   fechaFin: 'YYYY-MM-DD'
  * }
  */
 export const generarReporteAsistencia = async (req, res, next) => {
     try {
-        const { empresaId, fechaInicio, fechaFin } = req.body;
+        const { empresaId, empleadoId, fechaInicio, fechaFin } = req.body;
 
         // Validaciones básicas
         if (!fechaInicio || !fechaFin) {
@@ -24,13 +25,20 @@ export const generarReporteAsistencia = async (req, res, next) => {
 
         // Si empresaId viene como string 'todas' o vacío, lo consideramos null (todas las empresas)
         const empresaFilter =
-            empresaId && empresaId !== 'todas' ? Number(empresaId) : null;
+            empresaId && empresaId !== 'todas' && empresaId !== ''
+                ? Number(empresaId)
+                : null;
+
+        // Si empleadoId viene vacío, consideramos null (todos los empleados)
+        const empleadoFilter =
+            empleadoId && empleadoId !== ''
+                ? Number(empleadoId)
+                : null;
 
         const connection = await pool.getConnection();
 
         try {
-            // 1) Total de empleados que aparecen en el reporte
-            //    (empleados distintos con algún registro de asistencia en el período)
+            // 1) Total de empleados distintos que aparecen en el reporte
             const [rowsEmpleados] = await connection.query(
                 `
         SELECT COUNT(DISTINCT e.id) AS total_empleados
@@ -38,8 +46,16 @@ export const generarReporteAsistencia = async (req, res, next) => {
         INNER JOIN empleados e ON a.empleado_id = e.id
         WHERE a.fecha BETWEEN ? AND ?
           AND ( ? IS NULL OR e.empresa_id = ? )
-      `,
-                [fechaInicio, fechaFin, empresaFilter, empresaFilter],
+          AND ( ? IS NULL OR a.empleado_id = ? )
+        `,
+                [
+                    fechaInicio,
+                    fechaFin,
+                    empresaFilter,
+                    empresaFilter,
+                    empleadoFilter,
+                    empleadoFilter,
+                ],
             );
 
             const totalEmpleados = rowsEmpleados[0]?.total_empleados || 0;
@@ -52,8 +68,16 @@ export const generarReporteAsistencia = async (req, res, next) => {
         INNER JOIN empleados e ON a.empleado_id = e.id
         WHERE a.fecha BETWEEN ? AND ?
           AND ( ? IS NULL OR e.empresa_id = ? )
-      `,
-                [fechaInicio, fechaFin, empresaFilter, empresaFilter],
+          AND ( ? IS NULL OR a.empleado_id = ? )
+        `,
+                [
+                    fechaInicio,
+                    fechaFin,
+                    empresaFilter,
+                    empresaFilter,
+                    empleadoFilter,
+                    empleadoFilter,
+                ],
             );
 
             const totalAsistencias = rowsAsistencias[0]?.total_asistencias || 0;
@@ -68,8 +92,16 @@ export const generarReporteAsistencia = async (req, res, next) => {
         WHERE a.fecha BETWEEN ? AND ?
           AND t.codigo = 'AUSENTE'
           AND ( ? IS NULL OR e.empresa_id = ? )
-      `,
-                [fechaInicio, fechaFin, empresaFilter, empresaFilter],
+          AND ( ? IS NULL OR a.empleado_id = ? )
+        `,
+                [
+                    fechaInicio,
+                    fechaFin,
+                    empresaFilter,
+                    empresaFilter,
+                    empleadoFilter,
+                    empleadoFilter,
+                ],
             );
 
             const totalInasistencias =
@@ -87,8 +119,16 @@ export const generarReporteAsistencia = async (req, res, next) => {
         INNER JOIN tipos_asistencia t ON a.tipo_id = t.id
         WHERE a.fecha BETWEEN ? AND ?
           AND ( ? IS NULL OR e.empresa_id = ? )
-      `,
-                [fechaInicio, fechaFin, empresaFilter, empresaFilter],
+          AND ( ? IS NULL OR a.empleado_id = ? )
+        `,
+                [
+                    fechaInicio,
+                    fechaFin,
+                    empresaFilter,
+                    empresaFilter,
+                    empleadoFilter,
+                    empleadoFilter,
+                ],
             );
 
             const horasTotales = rowsHoras[0]?.horas_totales || 0;
@@ -109,9 +149,17 @@ export const generarReporteAsistencia = async (req, res, next) => {
         INNER JOIN tipos_asistencia t ON a.tipo_id = t.id
         WHERE a.fecha BETWEEN ? AND ?
           AND ( ? IS NULL OR emp.id = ? )
+          AND ( ? IS NULL OR a.empleado_id = ? )
         ORDER BY emp.nombre, e.nombre_completo, a.fecha, a.hora
-      `,
-                [fechaInicio, fechaFin, empresaFilter, empresaFilter],
+        `,
+                [
+                    fechaInicio,
+                    fechaFin,
+                    empresaFilter,
+                    empresaFilter,
+                    empleadoFilter,
+                    empleadoFilter,
+                ],
             );
 
             // Respuesta al frontend (estructura acordada)

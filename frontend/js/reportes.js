@@ -58,6 +58,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnLogout = document.getElementById('btnLogout');
 
     const filtroEmpresa = document.getElementById('filtroEmpresa');
+    const filtroEmpleado = document.getElementById('filtroEmpleado'); // 👈 NUEVO
+
     const fechaInicio = document.getElementById('fechaInicio');
     const fechaFin = document.getElementById('fechaFin');
     const btnGenerarReporte = document.getElementById('btnGenerarReporte');
@@ -120,10 +122,60 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // ==================== CARGA DE EMPLEADOS (para el combo) ====================
+
+    async function cargarEmpleados(empresaId = null) {
+        if (!filtroEmpleado) return;
+
+        try {
+            let url = `${API_BASE_URL}/api/empleados?incluirInactivos=false`;
+            if (empresaId) {
+                url += `&empresa_id=${empresaId}`;
+            }
+
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: authHeaders(token),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok || !data || data.ok === false) {
+                console.error('Error al cargar empleados para reportes:', data);
+                return;
+            }
+
+            const empleados = data.data || [];
+
+            filtroEmpleado.innerHTML = '';
+
+            const optTodos = document.createElement('option');
+            optTodos.value = '';
+            optTodos.textContent = 'Todos';
+            filtroEmpleado.appendChild(optTodos);
+
+            empleados.forEach((emp) => {
+                const opt = document.createElement('option');
+                opt.value = emp.id;
+                opt.textContent = emp.nombre_completo;
+                filtroEmpleado.appendChild(opt);
+            });
+        } catch (error) {
+            console.error('Error de red al cargar empleados:', error);
+        }
+    }
+
+    // Cuando cambie la empresa, recargamos empleados filtrados por esa empresa
+    if (filtroEmpresa && filtroEmpleado) {
+        filtroEmpresa.addEventListener('change', () => {
+            const empresaId = filtroEmpresa.value || null;
+            cargarEmpleados(empresaId);
+        });
+    }
+
     // ==================== RENDER DE KPIs ====================
 
     function renderKpis(dataKpi) {
-        // El backend devuelve:
         // data: { empleados, asistencias, inasistencias, horasTotales, resultados }
         if (!dataKpi) dataKpi = {};
 
@@ -161,8 +213,6 @@ document.addEventListener('DOMContentLoaded', () => {
         registros.forEach((reg) => {
             const tr = document.createElement('tr');
 
-            // El controlador construye:
-            // empresa, empleado, fecha, entrada, salida (NULL), horas
             const empresaNombre = reg.empresa || '';
             const empleadoNombre = reg.empleado || '';
 
@@ -207,9 +257,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const payload = {
-            empresaId: filtroEmpresa && filtroEmpresa.value ? filtroEmpresa.value : null,
+            empresaId:
+                filtroEmpresa && filtroEmpresa.value ? filtroEmpresa.value : null,
             fechaInicio: fechaInicioVal,
             fechaFin: fechaFinVal,
+            empleadoId:
+                filtroEmpleado && filtroEmpleado.value ? filtroEmpleado.value : null,
         };
 
         try {
@@ -227,7 +280,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            // data.data = { empleados, asistencias, inasistencias, horasTotales, resultados }
             const dataKpi = data.data || {};
             const registros = dataKpi.resultados || [];
 
@@ -247,6 +299,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     (async () => {
         await cargarEmpresas();
+        await cargarEmpleados(); // todas las empresas / todos los empleados
 
         const hoy = getTodayISO();
         const inicioMes = getStartOfMonthISO();
