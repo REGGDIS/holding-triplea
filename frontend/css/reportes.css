@@ -51,6 +51,12 @@
   color: white;
 }
 
+/* Centrar texto en las tablas de resumen (estado civil y comuna) */
+.table.table-centered th,
+.table.table-centered td {
+  text-align: center;
+}
+
 /* ==================== RESPONSIVE ==================== */
 @media (max-width: 768px) {
   .kpi-value {

@@ -1,10 +1,20 @@
 // backend/src/routes/reportes.routes.js
 import { Router } from 'express';
-import { generarReporteAsistencia } from '../controllers/reportes.controller.js';
+import {
+    generarReporteAsistencia,
+    empleadosPorEstadoCivil,
+    empleadosPorComuna
+} from '../controllers/reportes.controller.js';
 
 const router = Router();
 
-// POST /api/reportes
+// RB-05 / RB-06: reportes de asistencia
 router.post('/', generarReporteAsistencia);
+
+// RB-02: conteo por estado civil y empresa
+router.get('/empleados-estado-civil', empleadosPorEstadoCivil);
+
+// RB-03: conteo por comuna y empresa
+router.get('/empleados-comuna', empleadosPorComuna);
 
 export default router;

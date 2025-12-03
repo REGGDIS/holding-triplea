@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnLogout = document.getElementById('btnLogout');
 
     const filtroEmpresa = document.getElementById('filtroEmpresa');
-    const filtroEmpleado = document.getElementById('filtroEmpleado'); // 👈 NUEVO
+    const filtroEmpleado = document.getElementById('filtroEmpleado');
 
     const fechaInicio = document.getElementById('fechaInicio');
     const fechaFin = document.getElementById('fechaFin');
@@ -70,6 +70,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const valorHorasTrabajadas = document.getElementById('valorHorasTrabajadas');
 
     const reportesBody = document.getElementById('reportesBody');
+
+    const tbodyEstadoCivil = document.getElementById('tbodyEstadoCivil');
+    const tbodyComunas = document.getElementById('tbodyComunas');
 
     // ======== Navbar: usuario + logout ========
     if (userNameSpan && user && user.nombre_completo) {
@@ -122,7 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // ==================== CARGA DE EMPLEADOS (para el combo) ====================
+    // ==================== CARGA DE EMPLEADOS (PARA EL COMBO) ====================
 
     async function cargarEmpleados(empresaId = null) {
         if (!filtroEmpleado) return;
@@ -165,7 +168,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Cuando cambie la empresa, recargamos empleados filtrados por esa empresa
+    // Cuando cambie la empresa, recargamos empleados solo de esa empresa
     if (filtroEmpresa && filtroEmpleado) {
         filtroEmpresa.addEventListener('change', () => {
             const empresaId = filtroEmpresa.value || null;
@@ -176,7 +179,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==================== RENDER DE KPIs ====================
 
     function renderKpis(dataKpi) {
-        // data: { empleados, asistencias, inasistencias, horasTotales, resultados }
         if (!dataKpi) dataKpi = {};
 
         if (valorTotalEmpleados) {
@@ -197,9 +199,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // ==================== RENDER TABLA ====================
+    // ==================== RENDER TABLA DE ASISTENCIA ====================
 
-    function renderTabla(registros) {
+    function renderTablaAsistencia(registros) {
         if (!reportesBody) return;
 
         if (!registros || registros.length === 0) {
@@ -238,7 +240,131 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // ==================== GENERAR REPORTE ====================
+    // ==================== RB-02: RENDER TABLA ESTADO CIVIL ====================
+
+    function renderTablaEstadoCivil(registros) {
+        if (!tbodyEstadoCivil) return;
+
+        if (!registros || registros.length === 0) {
+            tbodyEstadoCivil.innerHTML =
+                '<tr><td colspan="3">No hay datos para mostrar.</td></tr>';
+            return;
+        }
+
+        tbodyEstadoCivil.innerHTML = '';
+
+        registros.forEach((row) => {
+            const tr = document.createElement('tr');
+
+            const empresaNombre = row.empresa_nombre || '—';
+            const estadoCivil = row.estado_civil_nombre || 'Sin estado civil';
+            const total = row.total_empleados ?? 0;
+
+            tr.innerHTML = `
+        <td>${empresaNombre}</td>
+        <td>${estadoCivil}</td>
+        <td>${total}</td>
+      `;
+
+            tbodyEstadoCivil.appendChild(tr);
+        });
+    }
+
+    // ==================== RB-03: RENDER TABLA COMUNAS ====================
+
+    function renderTablaComunas(registros) {
+        if (!tbodyComunas) return;
+
+        if (!registros || registros.length === 0) {
+            tbodyComunas.innerHTML =
+                '<tr><td colspan="3">No hay datos para mostrar.</td></tr>';
+            return;
+        }
+
+        tbodyComunas.innerHTML = '';
+
+        registros.forEach((row) => {
+            const tr = document.createElement('tr');
+
+            const empresaNombre = row.empresa_nombre || '—';
+            const comunaNombre = row.comuna_nombre || 'Sin comuna';
+            const total = row.total_empleados ?? 0;
+
+            tr.innerHTML = `
+        <td>${empresaNombre}</td>
+        <td>${comunaNombre}</td>
+        <td>${total}</td>
+      `;
+
+            tbodyComunas.appendChild(tr);
+        });
+    }
+
+    // ==================== FETCH RB-02: EMPLEADOS POR ESTADO CIVIL ====================
+
+    async function cargarDistribucionEstadoCivil(empresaId = null) {
+        if (!tbodyEstadoCivil) return;
+
+        try {
+            let url = `${API_BASE_URL}/api/reportes/empleados-estado-civil`;
+            if (empresaId) {
+                url += `?empresaId=${empresaId}`;
+            }
+
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: authHeaders(token),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok || !data || data.ok === false) {
+                console.error('Error al cargar reporte por estado civil:', data);
+                renderTablaEstadoCivil([]);
+                return;
+            }
+
+            const registros = data.data || [];
+            renderTablaEstadoCivil(registros);
+        } catch (error) {
+            console.error('Error de red al cargar reporte por estado civil:', error);
+            renderTablaEstadoCivil([]);
+        }
+    }
+
+    // ==================== FETCH RB-03: EMPLEADOS POR COMUNA ====================
+
+    async function cargarDistribucionComunas(empresaId = null) {
+        if (!tbodyComunas) return;
+
+        try {
+            let url = `${API_BASE_URL}/api/reportes/empleados-comuna`;
+            if (empresaId) {
+                url += `?empresaId=${empresaId}`;
+            }
+
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: authHeaders(token),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok || !data || data.ok === false) {
+                console.error('Error al cargar reporte por comuna:', data);
+                renderTablaComunas([]);
+                return;
+            }
+
+            const registros = data.data || [];
+            renderTablaComunas(registros);
+        } catch (error) {
+            console.error('Error de red al cargar reporte por comuna:', error);
+            renderTablaComunas([]);
+        }
+    }
+
+    // ==================== GENERAR REPORTE PRINCIPAL (ASISTENCIA) ====================
 
     async function generarReporte() {
         if (!fechaInicio || !fechaFin) return;
@@ -256,13 +382,15 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        const empresaId = filtroEmpresa && filtroEmpresa.value ? filtroEmpresa.value : null;
+        const empleadoId =
+            filtroEmpleado && filtroEmpleado.value ? filtroEmpleado.value : null;
+
         const payload = {
-            empresaId:
-                filtroEmpresa && filtroEmpresa.value ? filtroEmpresa.value : null,
+            empresaId,
             fechaInicio: fechaInicioVal,
             fechaFin: fechaFinVal,
-            empleadoId:
-                filtroEmpleado && filtroEmpleado.value ? filtroEmpleado.value : null,
+            empleadoId,
         };
 
         try {
@@ -284,7 +412,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const registros = dataKpi.resultados || [];
 
             renderKpis(dataKpi);
-            renderTabla(registros);
+            renderTablaAsistencia(registros);
+
+            // Además, actualizar RB-02 y RB-03 en base a la empresa seleccionada
+            await cargarDistribucionEstadoCivil(empresaId);
+            await cargarDistribucionComunas(empresaId);
         } catch (error) {
             console.error('Error de red al generar reporte:', error);
             alert('Error de conexión al generar el reporte.');
@@ -299,7 +431,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     (async () => {
         await cargarEmpresas();
-        await cargarEmpleados(); // todas las empresas / todos los empleados
+        await cargarEmpleados(); // todos los empleados
 
         const hoy = getTodayISO();
         const inicioMes = getStartOfMonthISO();
@@ -311,7 +443,7 @@ document.addEventListener('DOMContentLoaded', () => {
             fechaFin.value = hoy;
         }
 
-        // Generar reporte inicial
+        // Generar reporte inicial (asistencia + dist. estado civil + comuna)
         await generarReporte();
     })();
 });

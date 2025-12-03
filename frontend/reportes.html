@@ -60,7 +60,7 @@
           </select>
         </div>
 
-        <!-- Empleado (NUEVO) -->
+        <!-- Empleado -->
         <div class="form-group">
           <label for="filtroEmpleado">Empleado</label>
           <select id="filtroEmpleado" class="form-input">
@@ -113,9 +113,9 @@
       </div>
     </section>
 
-    <!-- ==================== TABLA DE RESULTADOS ==================== -->
+    <!-- ==================== TABLA DE RESULTADOS (ASISTENCIA) ==================== -->
     <section class="table-section card">
-      <h3>Resultados del Reporte</h3>
+      <h3>Resultados del Reporte de Asistencia</h3>
 
       <table class="table" id="tablaReportes">
         <thead>
@@ -129,6 +129,42 @@
           </tr>
         </thead>
         <tbody id="reportesBody">
+          <!-- Filas dinámicas agregadas por JavaScript -->
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ==================== RB-02: EMPLEADOS POR ESTADO CIVIL ==================== -->
+    <section class="table-section card">
+      <h3>Empleados por estado civil y empresa</h3>
+
+      <table class="table table-centered" id="tablaEstadoCivil">
+        <thead>
+          <tr>
+            <th>Empresa</th>
+            <th>Estado civil</th>
+            <th>Total empleados</th>
+          </tr>
+        </thead>
+        <tbody id="tbodyEstadoCivil">
+          <!-- Filas dinámicas agregadas por JavaScript -->
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ==================== RB-03: EMPLEADOS POR COMUNA ==================== -->
+    <section class="table-section card">
+      <h3>Empleados por comuna y empresa</h3>
+
+      <table class="table table-centered" id="tablaComunas">
+        <thead>
+          <tr>
+            <th>Empresa</th>
+            <th>Comuna</th>
+            <th>Total empleados</th>
+          </tr>
+        </thead>
+        <tbody id="tbodyComunas">
           <!-- Filas dinámicas agregadas por JavaScript -->
         </tbody>
       </table>
