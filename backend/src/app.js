@@ -11,6 +11,7 @@ import empleadosRoutes from './routes/empleados.routes.js';
 import asistenciaRoutes from './routes/asistencia.routes.js';
 import catalogosRoutes from './routes/catalogos.routes.js';
 import reportesRoutes from './routes/reportes.routes.js';
+import empresasRoutes from './routes/empresas.routes.js';
 
 // Middlewares
 import authMiddleware from './middlewares/auth.middleware.js';
@@ -57,6 +58,7 @@ app.use('/api/catalogos', authMiddleware, catalogosRoutes);
 app.use('/api/empleados', authMiddleware, empleadosRoutes);
 app.use('/api/asistencias', authMiddleware, asistenciaRoutes);
 app.use('/api/reportes', authMiddleware, reportesRoutes);
+app.use('/api/empresas', empresasRoutes);
 
 // =================== Middlewares finales ===================
 app.use(notFoundHandler);
