@@ -2,10 +2,13 @@
 import pool from '../config/db.js';
 
 /**
- * Lista empresas, opcionalmente solo las activas.
+ * Lista empresas con filtros opcionales.
+ * Parámetros:
+ *  - soloActivas: true => sólo empresas con activo = 1
+ *  - busqueda: texto para filtrar por nombre o RUT (LIKE)
  */
-export async function findAllEmpresas({ soloActivas = true } = {}) {
-    let sql = `
+export async function findAllEmpresas({ soloActivas = true, busqueda = null } = {}) {
+  let sql = `
     SELECT
       e.id,
       e.nombre,
@@ -21,25 +24,34 @@ export async function findAllEmpresas({ soloActivas = true } = {}) {
       e.actualizado_en
     FROM empresas e
     LEFT JOIN comunas c ON e.comuna_id = c.id
+    WHERE 1 = 1
   `;
 
-    const params = [];
+  const params = [];
 
-    if (soloActivas) {
-        sql += ' WHERE e.activo = 1';
-    }
+  // Filtro: sólo activas
+  if (soloActivas) {
+    sql += ' AND e.activo = 1';
+  }
 
-    sql += ' ORDER BY e.nombre';
+  // Filtro: búsqueda por nombre o RUT
+  if (busqueda) {
+    sql += ' AND (e.nombre LIKE ? OR e.rut LIKE ?)';
+    const like = `%${busqueda}%`;
+    params.push(like, like);
+  }
 
-    const [rows] = await pool.query(sql, params);
-    return rows;
+  sql += ' ORDER BY e.nombre';
+
+  const [rows] = await pool.query(sql, params);
+  return rows;
 }
 
 /**
  * Busca una empresa por ID.
  */
 export async function findEmpresaById(id) {
-    const sql = `
+  const sql = `
     SELECT
       e.id,
       e.nombre,
@@ -59,26 +71,26 @@ export async function findEmpresaById(id) {
     LIMIT 1
   `;
 
-    const [rows] = await pool.query(sql, [id]);
-    return rows[0] || null;
+  const [rows] = await pool.query(sql, [id]);
+  return rows[0] || null;
 }
 
 /**
  * Crea una nueva empresa y devuelve el ID generado.
  */
 export async function createEmpresa(data) {
-    const {
-        nombre,
-        rut,
-        giro,
-        direccion,
-        comuna_id,
-        telefono,
-        correo_contacto,
-        activo = 1
-    } = data;
+  const {
+    nombre,
+    rut,
+    giro,
+    direccion,
+    comuna_id,
+    telefono,
+    correo_contacto,
+    activo = 1
+  } = data;
 
-    const sql = `
+  const sql = `
     INSERT INTO empresas (
       nombre,
       rut,
@@ -92,74 +104,73 @@ export async function createEmpresa(data) {
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
   `;
 
-    const params = [
-        nombre,
-        rut,
-        giro,
-        direccion,
-        comuna_id || null,
-        telefono,
-        correo_contacto,
-        activo
-    ];
+  const params = [
+    nombre,
+    rut,
+    giro,
+    direccion,
+    comuna_id || null,
+    telefono,
+    correo_contacto,
+    activo
+  ];
 
-    const [result] = await pool.query(sql, params);
-    return result.insertId;
+  const [result] = await pool.query(sql, params);
+  return result.insertId;
 }
 
 /**
  * Actualiza parcialmente una empresa.
  */
 export async function updateEmpresa(id, data) {
-    // Construcción dinámica del UPDATE según los campos recibidos
-    const campos = [];
-    const params = [];
+  const campos = [];
+  const params = [];
 
-    const columnasPermitidas = [
-        'nombre',
-        'rut',
-        'giro',
-        'direccion',
-        'comuna_id',
-        'telefono',
-        'correo_contacto',
-        'activo'
-    ];
+  const columnasPermitidas = [
+    'nombre',
+    'rut',
+    'giro',
+    'direccion',
+    'comuna_id',
+    'telefono',
+    'correo_contacto',
+    'activo'
+  ];
 
-    for (const key of columnasPermitidas) {
-        if (data[key] !== undefined) {
-            campos.push(`${key} = ?`);
-            params.push(data[key]);
-        }
+  for (const key of columnasPermitidas) {
+    if (data[key] !== undefined) {
+      campos.push(`${key} = ?`);
+      params.push(data[key]);
     }
+  }
 
-    if (campos.length === 0) {
-        // Nada que actualizar
-        return { affectedRows: 0 };
-    }
+  if (campos.length === 0) {
+    // Nada que actualizar
+    return { affectedRows: 0 };
+  }
 
-    const sql = `
+  const sql = `
     UPDATE empresas
     SET ${campos.join(', ')}
     WHERE id = ?
   `;
 
-    params.push(id);
+  params.push(id);
 
-    const [result] = await pool.query(sql, params);
-    return result;
+  const [result] = await pool.query(sql, params);
+  return result;
 }
 
 /**
  * "Elimina" la empresa marcándola como inactiva.
  */
 export async function softDeleteEmpresa(id) {
-    const sql = `
+  const sql = `
     UPDATE empresas
     SET activo = 0
     WHERE id = ?
   `;
 
-    const [result] = await pool.query(sql, [id]);
-    return result;
+  const [result] = await pool.query(sql, [id]);
+  return result;
 }

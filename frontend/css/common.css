@@ -214,3 +214,15 @@ body {
 .font-semibold {
   font-weight: var(--font-weight-semibold);
 }
+
+/* Botón secundario */
+.btn-secondary {
+  background: var(--color-white);
+  color: var(--color-primary);
+  border: 2px solid var(--color-primary);
+}
+
+.btn-secondary:hover {
+  background: var(--color-primary);
+  color: var(--color-white);
+}

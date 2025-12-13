@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestión de Empresas | Holding Triple A</title>
+
+  <!-- Estilos base -->
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/common.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/empresas.css">
+
+  <!-- Favicon -->
+  <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
+</head>
+
+<body class="dashboard-body">
+
+  <!-- ==================== NAVBAR ==================== -->
+  <nav class="navbar">
+    <div class="navbar-logo">
+      <img src="assets/images/logo.png" alt="Holding Triple A" width="48">
+      <h2>Holding Triple A</h2>
+    </div>
+
+    <ul class="navbar-menu">
+      <li><a href="dashboard.html">Inicio</a></li>
+      <li><a href="empresas.html" class="active">Empresas</a></li>
+      <li><a href="empleados.html">Empleados</a></li>
+      <li><a href="asistencia.html">Asistencia</a></li>
+      <li><a href="reportes.html">Reportes</a></li>
+    </ul>
+
+    <div class="navbar-user">
+      <span id="userName">Usuario: --</span>
+      <button class="btn-logout" id="btnLogout">Cerrar sesión</button>
+    </div>
+  </nav>
+
+  <!-- ==================== CONTENIDO PRINCIPAL ==================== -->
+  <main class="dashboard-container">
+
+    <!-- TÍTULO -->
+    <header class="dashboard-header">
+      <h1>Gestión de Empresas</h1>
+      <p>Administración y mantenimiento de empresas del holding.</p>
+    </header>
+
+    <div class="empresas-layout">
+
+      <!-- ==================== FORMULARIO EMPRESA ==================== -->
+      <section class="empresa-form card">
+        <h2 class="section-title">Formulario de Empresa</h2>
+
+        <form id="empresaForm">
+
+          <!-- ID oculto (modo edición) -->
+          <input type="hidden" id="empresaId">
+
+          <div class="form-group">
+            <label class="form-label">Nombre de la empresa *</label>
+            <input type="text" id="empresaNombre" class="form-input" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">RUT *</label>
+            <input type="text" id="empresaRut" class="form-input" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Giro</label>
+            <input type="text" id="empresaGiro" class="form-input">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Comuna</label>
+            <select id="empresaComuna" class="form-input">
+              <option value="">Seleccione comuna</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Dirección</label>
+            <input type="text" id="empresaDireccion" class="form-input">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Teléfono</label>
+            <input type="text" id="empresaTelefono" class="form-input">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Correo electrónico</label>
+            <input type="email" id="empresaCorreo" class="form-input">
+          </div>
+
+          <div class="form-group">
+            <label class="checkbox-label">
+              <input type="checkbox" id="empresaActiva" checked>
+              Empresa activa
+            </label>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-block">
+            Guardar empresa
+          </button>
+
+          <button type="button" id="btnNuevaEmpresa" class="btn btn-secondary btn-block">
+            Nueva empresa
+          </button>
+
+          <div id="empresaFormAlert" class="form-alert"></div>
+
+        </form>
+      </section>
+
+      <!-- ==================== LISTADO ==================== -->
+      <section class="empresa-list card">
+        <h2 class="section-title">Listado de Empresas</h2>
+
+        <!-- Filtros -->
+        <div class="empresa-filtros">
+          <input type="text" id="filtroTexto" class="form-input"
+                 placeholder="Buscar por nombre o RUT">
+
+          <select id="filtroEstado" class="form-input">
+            <option value="activas">Solo activas</option>
+            <option value="todas">Todas</option>
+          </select>
+
+          <button id="btnActualizarLista" class="btn btn-primary">
+            Actualizar
+          </button>
+        </div>
+
+        <!-- Tabla -->
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>RUT</th>
+              <th>Comuna</th>
+              <th>Teléfono</th>
+              <th>Correo</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="empresasBody">
+            <!-- Filas dinámicas por JS -->
+          </tbody>
+        </table>
+
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Script funcional -->
+  <script src="js/empresas.js"></script>
+</body>
+</html>
+
+

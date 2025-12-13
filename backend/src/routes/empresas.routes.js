@@ -14,10 +14,19 @@ const router = Router();
 // Todas las rutas de empresas requieren usuario autenticado
 router.use(authRequired);
 
-router.get('/', listarEmpresas);         // Listar empresas (con ?incluirInactivas=true)
-router.get('/:id', obtenerEmpresaPorId); // Obtener detalle de una empresa
-router.post('/', crearEmpresa);         // Crear nueva empresa
-router.put('/:id', actualizarEmpresa);  // Actualizar empresa
-router.delete('/:id', eliminarEmpresa); // Marcar empresa como inactiva
+// GET /api/empresas?busqueda=...&solo_activas=1&solo_inactivas=1
+router.get('/', listarEmpresas);
+
+// GET /api/empresas/:id
+router.get('/:id', obtenerEmpresaPorId);
+
+// POST /api/empresas
+router.post('/', crearEmpresa);
+
+// PUT /api/empresas/:id
+router.put('/:id', actualizarEmpresa);
+
+// DELETE /api/empresas/:id  (en tu controller la dejaremos como "borrado lógico"/inactiva)
+router.delete('/:id', eliminarEmpresa);
 
 export default router;

@@ -18,6 +18,9 @@
   --color-warning: #ff9800;
   --color-warning-light: #fff3e0;
 
+  --color-info: #2196f3;
+  --color-info-light: #e3f2fd;
+
   /* ========== COLORES DE TEXTO ========== */
   --color-text-primary: #1f2933;
   --color-text-secondary: #52606d;
@@ -28,6 +31,10 @@
   --color-background: #f5f7fa;
   --color-surface: #ffffff;
   --color-surface-alt: #f0f4f8;
+
+  /* Nuevas variables neutras usadas por Raymond */
+  --color-white: #ffffff;
+  --color-border: #e0e0e0;
   --color-divider: #d8e2ec;
 
   /* ========== TIPOGRAFÍA ========== */

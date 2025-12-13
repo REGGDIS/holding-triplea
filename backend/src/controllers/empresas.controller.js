@@ -11,15 +11,20 @@ import {
  * GET /api/empresas
  *
  * Query opcionales:
- *  - ?incluirInactivas=true
+ *  - ?incluirInactivas=true|false
+ *  - ?busqueda=texto  (nombre o RUT)
  */
 export async function listarEmpresas(req, res) {
     try {
-        const { incluirInactivas } = req.query;
+        const { incluirInactivas, busqueda } = req.query;
 
+        // Si NO viene incluirInactivas=true -> por defecto sólo activas
         const soloActivas = incluirInactivas === 'true' ? false : true;
 
-        const empresas = await findAllEmpresas({ soloActivas });
+        const empresas = await findAllEmpresas({
+            soloActivas,
+            busqueda: busqueda || null
+        });
 
         return res.json({
             ok: true,
