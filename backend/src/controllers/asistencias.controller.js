@@ -4,7 +4,9 @@ import {
     findAsistenciaById,
     findAsistencias,
     findHistorialPorEmpleado,
-    findAsistenciasPorEmpresa
+    findAsistenciasPorEmpresa,
+    updateAsistencia,
+    deleteAsistencia
 } from '../models/asistencias.model.js';
 
 /**
@@ -16,6 +18,7 @@ import {
  *  - tipo_id
  * Opcionales:
  *  - hora (HH:MM:SS)
+ *  - hora_salida (HH:MM:SS)
  *  - observaciones
  */
 export async function registrarAsistencia(req, res) {
@@ -24,6 +27,7 @@ export async function registrarAsistencia(req, res) {
             empleado_id,
             fecha,
             hora,
+            hora_salida,
             tipo_id,
             observaciones
         } = req.body;
@@ -40,6 +44,7 @@ export async function registrarAsistencia(req, res) {
             empleado_id,
             fecha,
             hora,
+            hora_salida,
             tipo_id,
             observaciones
         };
@@ -66,6 +71,40 @@ export async function registrarAsistencia(req, res) {
         return res.status(500).json({
             ok: false,
             message: 'Error al registrar la asistencia.'
+        });
+    }
+}
+
+// GET /api/asistencias/:id
+export async function obtenerAsistenciaPorId(req, res) {
+    try {
+        const id = Number(req.params.id);
+
+        if (Number.isNaN(id)) {
+            return res.status(400).json({
+                ok: false,
+                message: 'ID de asistencia no válido.'
+            });
+        }
+
+        const asistencia = await findAsistenciaById(id);
+
+        if (!asistencia) {
+            return res.status(404).json({
+                ok: false,
+                message: 'Asistencia no encontrada.'
+            });
+        }
+
+        return res.json({
+            ok: true,
+            data: asistencia
+        });
+    } catch (error) {
+        console.error('Error en obtenerAsistenciaPorId:', error);
+        return res.status(500).json({
+            ok: false,
+            message: 'Error al obtener la asistencia.'
         });
     }
 }
@@ -108,6 +147,77 @@ export async function listarAsistencias(req, res) {
         return res.status(500).json({
             ok: false,
             message: 'Error al obtener las asistencias.'
+        });
+    }
+}
+
+// PUT /api/asistencias/:id
+export async function actualizarAsistencia(req, res) {
+    try {
+        const id = Number(req.params.id);
+
+        if (Number.isNaN(id)) {
+            return res.status(400).json({
+                ok: false,
+                message: 'ID de asistencia no válido.'
+            });
+        }
+
+        const {
+            empleado_id,
+            fecha,
+            hora,
+            hora_salida,
+            tipo_id,
+            observaciones
+        } = req.body;
+
+        // Validación básica
+        if (!empleado_id || !fecha || !tipo_id) {
+            return res.status(400).json({
+                ok: false,
+                message: 'Debe indicar empleado_id, fecha y tipo_id.'
+            });
+        }
+
+        const data = {
+            empleado_id,
+            fecha,
+            hora,
+            hora_salida,
+            tipo_id,
+            observaciones
+        };
+
+        const result = await updateAsistencia(id, data);
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({
+                ok: false,
+                message: 'Asistencia no encontrada o sin cambios.'
+            });
+        }
+
+        const asistenciaActualizada = await findAsistenciaById(id);
+
+        return res.json({
+            ok: true,
+            message: 'Asistencia actualizada correctamente.',
+            data: asistenciaActualizada
+        });
+    } catch (error) {
+        console.error('Error en actualizarAsistencia:', error);
+
+        if (error.code === 'ER_DUP_ENTRY') {
+            return res.status(400).json({
+                ok: false,
+                message: 'Ya existe un registro de asistencia para ese empleado, fecha y tipo.'
+            });
+        }
+
+        return res.status(500).json({
+            ok: false,
+            message: 'Error al actualizar la asistencia.'
         });
     }
 }
@@ -184,6 +294,40 @@ export async function asistenciaPorEmpresa(req, res) {
         return res.status(500).json({
             ok: false,
             message: 'Error al obtener la asistencia de la empresa.'
+        });
+    }
+}
+
+// DELETE /api/asistencias/:id
+export async function eliminarAsistencia(req, res) {
+    try {
+        const id = Number(req.params.id);
+
+        if (Number.isNaN(id)) {
+            return res.status(400).json({
+                ok: false,
+                message: 'ID de asistencia no válido.'
+            });
+        }
+
+        const result = await deleteAsistencia(id);
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({
+                ok: false,
+                message: 'Asistencia no encontrada.'
+            });
+        }
+
+        return res.json({
+            ok: true,
+            message: 'Asistencia eliminada correctamente.'
+        });
+    } catch (error) {
+        console.error('Error en eliminarAsistencia:', error);
+        return res.status(500).json({
+            ok: false,
+            message: 'Error al eliminar la asistencia.'
         });
     }
 }

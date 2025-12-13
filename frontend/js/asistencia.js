@@ -198,7 +198,8 @@ document.addEventListener('DOMContentLoaded', () => {
             params.append('empresa_id', filtroEmpresa.value);
         }
         if (filtroFecha && filtroFecha.value) {
-            params.append('fecha', filtroFecha.value);
+            params.append('desde', filtroFecha.value);
+            params.append('hasta', filtroFecha.value);
         }
 
         const url = `${API_BASE_URL}/api/asistencias${params.toString() ? `?${params.toString()}` : ''}`;
@@ -233,9 +234,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 // empresa_nombre, empleado_nombre, fecha, hora
                 const empresaNombre = asis.empresa_nombre || '';
                 const empleadoNombre = asis.empleado_nombre || asis.nombre_empleado || '';
-                const fecha = asis.fecha || '';
+                let fecha = '';
+                if (asis.fecha) {
+                    fecha = typeof asis.fecha === 'string'
+                        ? asis.fecha.slice(0, 10)
+                        : new Date(asis.fecha).toISOString().slice(0, 10);
+                }
+
                 const horaEntradaValue = asis.hora || '';
-                const horaSalidaValue = asis.hora_salida || '-'; // Por ahora no se guarda hora de salida
+                const horaSalidaValue = asis.hora_salida || '-';
 
                 tr.innerHTML = `
           <td>${empresaNombre}</td>
@@ -274,6 +281,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const empleadoId = empleadoAsistencia && empleadoAsistencia.value ? Number(empleadoAsistencia.value) : null;
         const fecha = fechaAsistencia ? fechaAsistencia.value : '';
         const hora = horaEntrada ? horaEntrada.value : '';
+        const horaSalidaValue = horaSalida ? horaSalida.value : '';
 
         // Validaciones mínimas
         if (!empresaId || !empleadoId || !fecha) {
@@ -290,6 +298,7 @@ document.addEventListener('DOMContentLoaded', () => {
             empleado_id: empleadoId,
             fecha,
             hora,
+            hora_salida: horaSalidaValue || null,
             tipo_id: DEFAULT_TIPO_ASISTENCIA_ID,
             observaciones: '', // Podríamos agregar campo en el formulario más adelante
         };
@@ -392,8 +401,20 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             if (fechaAsistencia && asis.fecha) {
-                fechaAsistencia.value = asis.fecha;
+                // Normalizar a YYYY-MM-DD para el input date
+                let fechaStr = '';
+
+                if (typeof asis.fecha === 'string') {
+                    // Si viene como '2025-11-30T03:00:00.000Z'
+                    fechaStr = asis.fecha.slice(0, 10);
+                } else {
+                    // Por si viniera como Date
+                    fechaStr = new Date(asis.fecha).toISOString().slice(0, 10);
+                }
+
+                fechaAsistencia.value = fechaStr;
             }
+
 
             if (horaEntrada && asis.hora) {
                 horaEntrada.value = asis.hora;
